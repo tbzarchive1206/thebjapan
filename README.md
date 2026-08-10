@@ -23,5 +23,6 @@ Workflow `.github/workflows/update-the-b-japan.yml` uruchamia się codziennie o 
 - Zdjęcia można otwierać i pobierać.
 - Filmy można odtwarzać bezpośrednio na stronie, otwierać w Drive i pobierać.
 - Dokumenty Q&A są udostępniane jako klikalne karty.
+- Dwa dokumenty Google Docs w kolekcji Q&A mają osobne kafelki `Q&A Counseling Corner` i `Q&A`. Po otwarciu ich aktualna treść jest wczytywana bezpośrednio z Google Docs, dlatego edycje dokumentów nie wymagają ponownego generowania strony. Dokumenty muszą zachować publiczny dostęp `Każdy, kto ma link → Wyświetlający`.
 
 Nie edytuj ręcznie `data.js` ani wygenerowanych podstron. Wygląd zmieniaj w `styles.css`, a działanie w `landing.js` i `gallery.js`.

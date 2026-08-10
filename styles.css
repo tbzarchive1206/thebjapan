@@ -16,3 +16,6 @@
 @media(max-width:720px){.folders-section .folder-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.folders-section .folder{min-width:0;padding:13px}.folders-section .folder>strong{font-size:28px}.folders-section .folder>small{overflow-wrap:anywhere}}
 @media(max-width:380px){.folders-section .folder-grid{grid-template-columns:1fr}}
 
+.google-doc-reader{height:calc(100vh - 155px);min-height:560px;border:1px solid var(--blue);border-top:0;background:var(--pale)}.google-doc-reader iframe{display:block;width:100%;height:100%;border:0;background:var(--white)}
+@media(max-width:720px){.google-doc-reader{height:calc(100vh - 180px);min-height:520px;border-width:0}}
+
