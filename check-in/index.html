@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#1746d1">
   <meta name="description" content="Fan-made THE B JAPAN archive">
   <title>THE B JAPAN — THE BOYZ Archive</title>
+  <link rel="icon" type="image/png" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
   <link rel="stylesheet" href="../styles.css">
 </head>
 <body data-page="collection" data-collection="check-in">
@@ -15,7 +17,6 @@
       <nav aria-label="Archive links">
         <a href="https://tbzarchive1206.github.io/tbzarchive/" target="_blank" rel="noopener noreferrer" data-i18n="mainArchive">MAIN ARCHIVE ↗</a>
         <span>/</span><a href="https://x.com/tbzarchive1206_" target="_blank" rel="noopener noreferrer">TWITTER ↗</a>
-        <button class="lang-toggle" id="langToggle" type="button" aria-label="Change language">EN</button>
       </nav>
     </div>
     <a class="back-link" href="../index.html">← <span data-i18n="backToArchive">THE B JAPAN</span></a>
@@ -29,7 +30,7 @@
   <main>
     <section class="controls" aria-label="Gallery controls">
       <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" autocomplete="off" data-i18n-placeholder="searchGalleries" placeholder="SEARCH GALLERIES..."></label>
-      <div class="filter-row single-filter"><label><span data-i18n="sort">SORT</span><select id="sortFilter"><option value="source" data-i18n="sourceOrder">SOURCE ORDER</option><option value="newest" data-i18n="newest">NEWEST</option><option value="largest" data-i18n="largest">MOST MEDIA</option><option value="az">A—Z</option></select></label></div>
+      <div class="filter-row single-filter" id="filterRow"><label id="yearFilterLabel" hidden><span data-i18n="year">YEAR</span><select id="yearFilter"><option value="all">ALL YEARS</option></select></label><label><span data-i18n="sort">SORT</span><select id="sortFilter"><option value="source" data-i18n="sourceOrder">SOURCE ORDER</option><option value="newest" data-i18n="newest">NEWEST</option><option value="largest" data-i18n="largest">MOST MEDIA</option><option value="az">A—Z</option></select></label></div>
     </section>
     <section class="archive-section">
       <div class="results-head"><p id="resultsCount">—</p><a id="collectionDrive" class="source-link" href="#" target="_blank" rel="noopener noreferrer"><span data-i18n="openSource">OPEN SOURCE FOLDER</span> ↗</a></div>

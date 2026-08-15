@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import os
 import re
@@ -113,6 +114,40 @@ def media_record(item: dict):
     }
 
 
+def media_date_token(name: str):
+    """Return the newest valid YYMMDD token found in a Drive filename."""
+    tokens = []
+    for match in re.finditer(r"(?<!\d)(\d{6})(?!\d)", name):
+        token = match.group(1)
+        year = 2000 + int(token[:2])
+        month = int(token[2:4])
+        day = int(token[4:6])
+        try:
+            datetime.date(year, month, day)
+        except ValueError:
+            continue
+        tokens.append(token)
+    return max(tokens, default="")
+
+
+def movie_release_data(gallery: dict, fallback_year: int | None = None):
+    tokens = [
+        media_date_token(item["name"])
+        for group in gallery["groups"]
+        for item in group["media"]
+    ]
+    tokens = [token for token in tokens if token]
+    years = sorted({2000 + int(token[:2]) for token in tokens}, reverse=True)
+    if not years:
+        years = sorted({int(year) for year in re.findall(r"\b(20\d{2})\b", gallery["name"])}, reverse=True)
+    if not years and fallback_year:
+        years = [fallback_year]
+    gallery["releaseYears"] = years
+    sort_year = years[0] if years else fallback_year
+    gallery["releaseSort"] = max(tokens, default=f"{sort_year - 2000:02d}0000" if sort_year else "")
+    return gallery
+
+
 def collect_gallery(folder: dict):
     groups = []
 
@@ -153,6 +188,49 @@ def collect_gallery(folder: dict):
     }
 
 
+def collect_movie_galleries(collection_folder: dict):
+    """Turn Movie's year folders into metadata and each series into a gallery."""
+    galleries = []
+
+    def add_loose_file(item: dict, parent_id: str, fallback_year: int | None):
+        record = media_record(item)
+        name = re.sub(r"\.[^.]+$", "", record["name"]).strip() or record["name"]
+        gallery = {
+            "id": f"movie-file-{item['id']}",
+            "folderId": parent_id,
+            "name": name,
+            "itemCount": 1,
+            "imageCount": int(record["type"] == "image"),
+            "videoCount": int(record["type"] == "video"),
+            "audioCount": int(record["type"] == "audio"),
+            "documentCount": int(record["type"] == "document"),
+            "coverId": record["id"] if record["type"] in ("image", "video") else "",
+            "updatedAt": record.get("modifiedTime", ""),
+            "groups": [{"name": "MAIN", "media": [record]}],
+        }
+        galleries.append(movie_release_data(gallery, fallback_year))
+
+    for top_folder in collection_folder.get("children", []):
+        if top_folder.get("mimeType") != FOLDER_MIME:
+            add_loose_file(top_folder, collection_folder["id"], None)
+            continue
+        year_match = re.search(r"\b(20\d{2})\b", top_folder.get("name", ""))
+        if not year_match:
+            gallery = collect_gallery(top_folder)
+            if gallery["itemCount"]:
+                galleries.append(movie_release_data(gallery))
+            continue
+        fallback_year = int(year_match.group(1))
+        for child in top_folder.get("children", []):
+            if child.get("mimeType") == FOLDER_MIME:
+                gallery = collect_gallery(child)
+                if gallery["itemCount"]:
+                    galleries.append(movie_release_data(gallery, fallback_year))
+            else:
+                add_loose_file(child, top_folder["id"], fallback_year)
+    return galleries
+
+
 def build_archive(tree: dict):
     collections = []
     used_slugs = set()
@@ -167,17 +245,20 @@ def build_archive(tree: dict):
             suffix += 1
         used_slugs.add(slug)
         name_en, name_ko = bilingual_name(folder["name"])
-        galleries = [collect_gallery(child) for child in folder.get("children", []) if child.get("mimeType") == FOLDER_MIME]
-        loose = {
-            "id": folder["id"],
-            "name": "MAIN",
-            "children": [child for child in folder.get("children", []) if child.get("mimeType") != FOLDER_MIME],
-        }
-        main_gallery = collect_gallery(loose)
-        if main_gallery["itemCount"]:
-            main_gallery["id"] = f"{folder['id']}-main"
-            main_gallery["folderId"] = folder["id"]
-            galleries.insert(0, main_gallery)
+        if slug == "movie":
+            galleries = collect_movie_galleries(folder)
+        else:
+            galleries = [collect_gallery(child) for child in folder.get("children", []) if child.get("mimeType") == FOLDER_MIME]
+            loose = {
+                "id": folder["id"],
+                "name": "MAIN",
+                "children": [child for child in folder.get("children", []) if child.get("mimeType") != FOLDER_MIME],
+            }
+            main_gallery = collect_gallery(loose)
+            if main_gallery["itemCount"]:
+                main_gallery["id"] = f"{folder['id']}-main"
+                main_gallery["folderId"] = folder["id"]
+                galleries.insert(0, main_gallery)
         galleries = [gallery for gallery in galleries if gallery["itemCount"]]
         dates = [gallery["updatedAt"] for gallery in galleries if gallery.get("updatedAt")]
         collections.append({

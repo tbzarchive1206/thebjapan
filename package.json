@@ -1,0 +1,7 @@
+{
+  "name": "the-b-japan-archive",
+  "private": true,
+  "scripts": {
+    "test": "node tests/archive.test.mjs"
+  }
+}
