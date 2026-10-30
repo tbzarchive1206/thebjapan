@@ -54,6 +54,7 @@
     ["더비재팬 모바일 Q&A 아카이브 (한)", "Q&A"],
   ]);
   const number = (value) => new Intl.NumberFormat("en-US").format(value || 0);
+  const galleryLabel = (count) => count === 1 ? "GALLERY" : "GALLERIES";
   const date = (value) => {
     if (!value) return "—";
     return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" })
@@ -186,7 +187,7 @@
     cards.replaceChildren();
     items.forEach(({ gallery }, index) => cards.append(galleryCard(gallery, index)));
     const yearLabel = isMovie && state.year !== "all" ? `${state.year} · ` : "";
-    $("#resultsCount").textContent = `${yearLabel}${number(items.length)} ${copy.results}`;
+    $("#resultsCount").textContent = `${yearLabel}${number(items.length)} ${galleryLabel(items.length)}`;
     $("#empty").hidden = items.length !== 0;
   }
 
@@ -352,6 +353,7 @@
   $(".collection-masthead").classList.toggle("title-long", solid.textContent.length > 17);
   $(".collection-masthead").classList.toggle("title-very-long", solid.textContent.length > 23);
   $("#galleryCount").textContent = number(displayGalleries().length);
+  $('[data-i18n="galleries"]').textContent = galleryLabel(displayGalleries().length);
   $("#mediaCount").textContent = number(collection.itemCount);
   $("#updatedDate").textContent = date(collection.updatedAt);
   document.title = `${collection.nameEn} — THE B JAPAN`;

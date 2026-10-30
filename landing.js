@@ -19,6 +19,7 @@
   const $ = (selector) => document.querySelector(selector);
   const driveFolder = (id) => `https://drive.google.com/drive/folders/${encodeURIComponent(id)}`;
   const number = (value) => new Intl.NumberFormat("en-US").format(value || 0);
+  const galleryLabel = (count) => count === 1 ? "GALLERY" : "GALLERIES";
   const date = (value) => {
     if (!value) return "—";
     return new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" })
@@ -45,7 +46,7 @@
         ).length, 0,
       ), 0)
       : collection.galleryCount;
-    meta.textContent = `${number(galleryCount)} ${copy.galleries} · ${number(collection.itemCount)} ${copy.media} →`;
+    meta.textContent = `${number(galleryCount)} ${galleryLabel(galleryCount)} · ${number(collection.itemCount)} ${copy.media} →`;
     link.append(position, title, meta);
     return link;
   }
