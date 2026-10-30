@@ -36,7 +36,16 @@
     const title = document.createElement("strong");
     title.textContent = collection.nameEn;
     const meta = document.createElement("small");
-    meta.textContent = `${number(collection.galleryCount)} ${copy.galleries} · ${number(collection.itemCount)} ${copy.media} →`;
+    // Q&A displays each Google Doc as a separate gallery on the collection page.
+    // Count those documents rather than the Drive folders containing them.
+    const galleryCount = collection.slug === "q-a"
+      ? collection.galleries.reduce((total, gallery) => total + gallery.groups.reduce(
+        (count, group) => count + group.media.filter(
+          (item) => item.mimeType === "application/vnd.google-apps.document",
+        ).length, 0,
+      ), 0)
+      : collection.galleryCount;
+    meta.textContent = `${number(galleryCount)} ${copy.galleries} · ${number(collection.itemCount)} ${copy.media} →`;
     link.append(position, title, meta);
     return link;
   }
