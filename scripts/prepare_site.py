@@ -11,7 +11,7 @@ if site.exists():
     shutil.rmtree(site)
 site.mkdir()
 
-for filename in ("index.html", "styles.css", "landing.js", "gallery.js", "data.js", "icon.png"):
+for filename in ("index.html", "styles.css", "landing.js", "gallery.js", "data.js", "icon.png", "tbz-mobile-nav.css", "tbz-mobile-nav.js"):
     shutil.copy2(root / filename, site / filename)
 (site / ".nojekyll").write_text("", encoding="utf-8")
 
